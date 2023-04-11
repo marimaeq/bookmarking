@@ -1,0 +1,38 @@
+h1 {
+    color: #79BDA1;
+}
+
+/* #red {
+    width: 1px; you could actually just change it to 0px 
+    margin: 100px auto;
+    background: red;
+}
+*/
+
+/* #red {
+    width: 0px;
+    margin: auto;
+    background: red;
+}
+
+#blue {
+    width: 200px;
+    background: blue;
+} */
+
+#mydiv {
+    margin: 100px auto 24px;
+    position: relative;
+    left: 40%;
+    /* border: 1px solid red; */
+    width: 300px
+}
+
+.vertical-line{
+    width: 5px; /* Line width */
+    background-color: black; /* Line color */
+     /* Override in-line if you want specific height. */
+     /* Causes the line to float to left of content. 
+      You can instead use position:absolute or display:inline-block
+      if this fits better with your design */
+  }
