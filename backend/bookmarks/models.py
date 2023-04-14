@@ -11,7 +11,7 @@ class BookmarkFolder(models.Model):
         kwargs = {
             'id': self.id,
         }
-        return reverse("hx-folder-bookmarks", kwargs)
+        return reverse("bookmarks:hx-folder-bookmarks", kwargs=kwargs)
 
 
 class Bookmark(models.Model):

@@ -14,16 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-
-from bookmarks.views import (
-    BookmarkList,
-    HXFolderBookmarksView,
-)
+from django.urls import path, include
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', BookmarkList.as_view()),
-    path('hx/<int:id>/bookmarks', HXFolderBookmarksView.as_view(), name="hx-folder-bookmarks"),
+    path('bookmarks/', include('bookmarks.urls')),
 ]
