@@ -1,6 +1,9 @@
 
-<div>
-    {% for obj in queryset %}
-        {{ obj.name }}
-    {% endfor %}
-</div>
+{% if not opened %}
+    <div>
+        {% for obj in bookmark_list %}
+            {{ obj.name }}
+        {% endfor %}
+    </div>
+{% else %}
+{% endif %}

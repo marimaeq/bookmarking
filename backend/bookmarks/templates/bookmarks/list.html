@@ -8,10 +8,14 @@
     </head>
 
     <body>
+        {{ create_update_folder_url }}
         <div id="mydiv">
-            {% for obj in object_list %}
-                {% include 'bookmarks/folder-element.html' with folder=obj %}
-            {% endfor %}
+            <button hx-get="{{ create_update_folder_url }}" hx-target="#folders" hx-trigger="click" hx-swap="beforeend">New folder</button>
+            <div id="folders">
+                {% for obj in object_list %}
+                    {% include 'bookmarks/folder-element.html' with folder=obj %}
+                {% endfor %}
+            </div>
         </div>
     </body>
 </html>
