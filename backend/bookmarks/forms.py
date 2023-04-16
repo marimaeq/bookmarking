@@ -16,7 +16,9 @@ class FolderForm(forms.ModelForm):
         data = self.cleaned_data.get('name')
         qs = BookmarkFolder.objects.filter(name=data)
         # if not itself
-        if qs.count() == 1 and qs.first().id == self.instance.id:
+        if not qs.exists():
+            return data
+        elif qs.count() == 1 and qs.get().id is self.instance.id: # Untitled name didn't change
             return data
         else:
             raise forms.ValidationError("This name is already in use.")
