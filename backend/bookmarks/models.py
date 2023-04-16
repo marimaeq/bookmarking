@@ -2,6 +2,11 @@ from django.db import models
 from django.urls import reverse
 
 
+# class Element(models.Model):
+#     # by default, root folder
+#     folder = models.ForeignKey(BookmarkFolder, on_delete=models.SET_NULL)     # change me
+#     name = models.CharField(max_length=50, blank=True)
+
 
 class FolderManager(models.Manager):
     # closes all folders
@@ -13,8 +18,9 @@ class FolderManager(models.Manager):
 
 
 class BookmarkFolder(models.Model):
-    name = models.CharField(max_length=50, blank=True)
+    name = models.CharField(max_length=50, blank=True, unique=True)
     opened = models.BooleanField(default=False)
+    # folder = models.ForeignKey("self", on_delete=models.SET_NULL, null=True)
 
     objects = FolderManager()
 

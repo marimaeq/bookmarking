@@ -2,7 +2,7 @@
 
 <form hx-post="{{ obj.get_update_url }}" method="POST">
     {% csrf_token %}
-    <input type="text" name="name" value="{{ obj.name }}">
-    <!-- {{ form }} -->
+    <!-- <input type="text" name="name" value="{{ obj.name }}"> -->
+    {{ form }}
     <button type="submit">OK</button>
 </form>
