@@ -1,9 +1,0 @@
- 
-<div>
-    <form hx-post="{{ obj.get_create_update_url }}" method="POST">
-        {% csrf_token %}
-        <!-- <input type="text" name="name"> -->
-        {{ form }}
-        <button>OK</button>
-    </form>
-</div>

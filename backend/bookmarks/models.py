@@ -24,8 +24,11 @@ class BookmarkFolder(models.Model):
         }
         return reverse("bookmarks:hx-folder-bookmarks", kwargs=kwargs)
 
-    def get_create_update_url(self):
-        return reverse("bookmarks:hx-folder-create-update", kwargs={'id': self.id})
+    def get_update_url(self):
+        return reverse("bookmarks:hx-folder-update", kwargs={'id': self.id})
+    
+    # def get_create_url(self):
+    #     return reverse("bookmarks:hx-folder-create", kwargs={})
     
     def get_status(self):
         # i think it changes opened's value on given instance

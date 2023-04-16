@@ -1,0 +1,8 @@
+
+
+<div>
+    <button hx-get="{{ obj.get_bookmarks_url }}" hx-target="#bookmark-list-{{ obj.id }}"
+            hx-trigger="click">Expand</button>
+    {{ obj.name }}
+    <div class="hidden" id="bookmark-list-{{ obj.id }}"></div>
+</div>

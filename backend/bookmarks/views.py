@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 from .models import BookmarkFolder
 from .forms import FolderForm
 
@@ -20,10 +20,7 @@ class BookmarkList(ListView):
 
     def get_context_data(self):
         context = super().get_context_data()
-        context['create_update_folder_url'] = \
-                reverse("bookmarks:hx-folder-create-update", kwargs={'id': 0})
-                # kwargs={'id': None}, but you can't pass None(or even -1)
-                # probably because of <int:id>   (only positive integers)
+        context['create_folder_url'] = reverse("bookmarks:hx-folder-create", kwargs={})
         return context
 
 
@@ -61,42 +58,58 @@ class HXFolderBookmarksView(ListView):
         return obj.bookmark_set.all()
 
 
-class HXFolderCreateUpdateView(View):
-    # get
-    # creates folder with "Untitled #number" name
-    # and returns template with form for folder editin
-    # post
-    # handle post request from folder-edit form
-
-    # template_name = "partials/...folder-edit.html"
-    model = BookmarkFolder
+class HXFolderUpdateView(FormView):
+    """
+    Handles form for folder editing
+    """
+    form_class = FolderForm
 
     def get(self, request, id):
-        print("hxfoldercreateupdateview called!!!")
+        """Handle GET requests: instantiate a populated (Untitled) version of the form."""
         if not request.htmx:
-            return HttpResponse('Only htmx requests, id should be None when creating!!!')
+            return HttpResponse("only for htmx get requests!!!")
+        obj = self.get_object(id=id)
+        if obj is None:
+            return HttpResponse("Folder not found.")
+        context = self.get_context_data(obj=obj)
+        return render(request, "bookmarks/partials/folder-form.html", context=context)
 
-        # untitled folder
-        obj = BookmarkFolder.objects.create()
-        form = FolderForm(initial={'name': obj.name})
-        context = self.get_context_data(obj=obj, form=form)
-        return render(request, "bookmarks/partials/folder-edit-form.html", context=context)
-        # return HttpResponse("TEST TRY")
-
-    def get_context_data(self, **kwargs):
-        return kwargs
+    def get_object(self, **kwargs):
+        """Gives folder obj to edit"""
+        id = kwargs.get('id')
+        try:
+            obj = BookmarkFolder.objects.get(id=id)
+        except:
+            obj = None
+        return obj
 
     def post(self, request, id):
-        print("hxfoldercreateupdateview.post called!!!")
         if not request.htmx:
-            return HttpResponse('Only htmx requests allowed!!!')
+            return HttpResponse("only for htmx post requests!!!")
         form = FolderForm(request.POST)
-        obj = BookmarkFolder.objects.get(id=id)
         if form.is_valid():
-            # print(form.cleaned_data)
-            # print(dir(obj))
+            obj = self.get_object(id=id)
+            if obj is None:
+                return HttpResponse("Folder not found.")
             obj.name = form.cleaned_data.get('name')
             obj.save()
-            return 
+            context = self.get_context_data(obj=obj)
+            return render(request, "bookmarks/partials/folder-element.html", context=context)
 
-        return HttpResponse("TEST TRY")
+
+class HXFolderCreateView(View):
+    """
+    creates Untitled folder to pass to edit form
+    only htmx post request
+    """
+
+    def post(self, request):
+        print("hxfoldercreateview.post called!!!")
+        if not request.htmx:
+            return HttpResponse("only for htmx post requests!!!")
+
+        obj = BookmarkFolder.objects.create()
+        context = {
+            'obj': obj,
+        }
+        return render(request, "bookmarks/partials/mid-create-edit.html", context=context)    

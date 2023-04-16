@@ -10,12 +10,18 @@
     <body>
         {{ create_update_folder_url }}
         <div id="mydiv">
-            <button hx-get="{{ create_update_folder_url }}" hx-target="#folders" hx-trigger="click" hx-swap="beforeend">New folder</button>
+            <button hx-post="{{ create_folder_url }}" hx-target="#folders" hx-trigger="click" hx-swap="beforeend">New folder</button>
             <div id="folders">
-                {% for obj in object_list %}
-                    {% include 'bookmarks/folder-element.html' with folder=obj %}
+                {% for object in object_list %}
+                    {% include 'bookmarks/partials/folder-element.html' with obj=object %}
                 {% endfor %}
             </div>
         </div>
     </body>
+
+    <script>
+        document.body.addEventListener("htmx:configRequest", (event)=>{
+            event.detail.headers["X-CSRFToken"] = '{{ csrf_token }}'
+        })
+    </script>
 </html>
