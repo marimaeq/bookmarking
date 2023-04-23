@@ -20,7 +20,7 @@ class FolderManager(models.Manager):
 class BookmarkFolder(models.Model):
     name = models.CharField(max_length=50, blank=True, unique=True)
     opened = models.BooleanField(default=False)
-    # folder = models.ForeignKey("self", on_delete=models.SET_NULL, null=True)
+    parent_folder = models.ForeignKey("self", blank=True, on_delete=models.CASCADE, null=True)
 
     objects = FolderManager()
 
@@ -66,7 +66,7 @@ class BookmarkFolder(models.Model):
 
 
 class Bookmark(models.Model):
-    folder = models.ForeignKey(BookmarkFolder, blank=True, null=True, on_delete=models.SET_NULL)
+    parent_folder = models.ForeignKey(BookmarkFolder, blank=True, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50)
     url = models.URLField()
     # favicon
@@ -74,3 +74,9 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return self.name
+
+    """
+    parent_folder is instance of BookmarkFolder class
+    when p_f is deleted, its content is deleted
+    null p_f is the main folder
+    """
