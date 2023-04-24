@@ -1,0 +1,7 @@
+
+{% if not opened %}
+    {% for object in object_list %}
+        {% include 'bookmarks/partials/folder-element.html' with obj=object %}
+    {% endfor %}
+{% else %}
+{% endif %}

@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
-    BookmarkList,
-    HXFolderBookmarksView,
+    HomeView,
+    HXBookmarkFolderContent,
     HXFolderCreateView,
     HXFolderUpdateView,
 )
@@ -9,8 +9,14 @@ from .views import (
 app_name = 'bookmarks'
 
 urlpatterns = [
-    path('', BookmarkList.as_view(), name="folder-list"),
+    path('', HomeView.as_view(), name="home"),
+    path('hx/folder-content/', HXBookmarkFolderContent.as_view(), name="main-folder-content"),   
+    path('hx/folder-content/<int:id>/', HXBookmarkFolderContent.as_view(), name="folder-content"),
     path('hx/folder-create/', HXFolderCreateView.as_view(), name="hx-folder-create"),
-    path('hx/<int:id>/bookmarks', HXFolderBookmarksView.as_view(), name="hx-folder-bookmarks"),
     path('hx/<int:id>/folder-update/', HXFolderUpdateView.as_view(), name="hx-folder-update"),
 ]
+
+"""
+# main-folder-content: on the home page
+# folder-content: when "Extend" clicked     
+"""

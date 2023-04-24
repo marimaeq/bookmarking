@@ -3,57 +3,64 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.views import View
 from django.views.generic import ListView, FormView, UpdateView
-from .models import BookmarkFolder
+from .models import Bookmark, BookmarkFolder
 from .forms import FolderForm
+from itertools import chain
+from operator import attrgetter
+
 
 # Create your views here.
+class HomeView(View):
+    template_name = "bookmarks/home.html"
+
+    def get(self, request):
+        context = self.get_context_data()
+        return render(request, template_name=self.template_name, context=context)
+
+    def get_context_data(self):
+        context = {}
+        context['create_folder_url'] = reverse("bookmarks:hx-folder-create", kwargs={})
+        context['main_folder_content_url'] = reverse("bookmarks:main-folder-content", kwargs={})
+        return context
 
 
-class BookmarkList(ListView):
-    model = BookmarkFolder
-    template_name = 'bookmarks/list.html'
+class HXBookmarkFolderContent(ListView):
+    """
+    Handles content on the home page
+    and "Extend" functionality
+    """
+    template_name = 'bookmarks/partials/folder-content.html'
+    folder_id = None
 
     def get(self, request, *args, **kwargs):
-        self.model.objects.close_all()
+        if not request.htmx:
+            return HttpResponse("htmx requests only!!!")
+        self.folder_id = kwargs.get('id')
+        if self.folder_id is None:
+            BookmarkFolder.objects.close_all()
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self):
         context = super().get_context_data()
-        context['create_folder_url'] = reverse("bookmarks:hx-folder-create", kwargs={})
+        if self.folder_id is None:
+            context['opened'] = False
+        else:
+            try:
+                parent_folder = BookmarkFolder.objects.get(id=self.folder_id)
+                context['opened'] = parent_folder.get_status()
+            except:
+                context['opened'] = False
         return context
 
-
-class HXFolderBookmarksView(ListView):
-    """
-    accepts only hx-get requests
-    returns template of bookmarks to given folder
-    """
-    template_name = "bookmarks/partials/bookmark-list.html"
-    folder_obj = None
-
-    def get(self, request, id):
-        if not request.htmx:
-            return HttpResponse("Page not found.")
-
-        self.object_list = self.get_queryset(id=id)
-        context = self.get_context_data()
-        return render(request, template_name=self.template_name, context=context)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['opened'] = self.folder_obj.get_status()
-        print(context['opened'])
-        return context
-
-    def get_queryset(self, **kwargs):
-        id = kwargs.get('id')
-        try:
-            self.folder_obj = obj = BookmarkFolder.objects.get(id=id)
-        except:
-            obj = None
-        if obj is None:
-            return HttpResponse("Folder not found.")
-        return obj.bookmark_set.all()
+    def get_queryset(self):
+        id = self.folder_id
+        f = BookmarkFolder.objects.filter(parent_folder_id=id)
+        b = Bookmark.objects.filter(parent_folder_id=id)
+        qs = sorted(
+            list(chain(f, b)),
+            key=lambda instance: instance.name.lower()
+        )
+        return qs
 
 
 class HXFolderUpdateView(UpdateView):

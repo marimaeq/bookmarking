@@ -8,13 +8,10 @@
     </head>
 
     <body>
-        {{ create_update_folder_url }}
         <div id="mydiv">
             <button hx-post="{{ create_folder_url }}" hx-target="#folders" hx-trigger="click" hx-swap="beforeend">New folder</button>
-            <div id="folders">
-                {% for object in object_list %}
-                    {% include 'bookmarks/partials/folder-element.html' with obj=object %}
-                {% endfor %}
+            <div id="folders" hx-get="{{ main_folder_content_url }}", hx-trigger="revealed", hx-swap="innerHMTL">
+                
             </div>
         </div>
     </body>

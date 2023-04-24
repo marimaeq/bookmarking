@@ -1,8 +1,12 @@
-
+{% load bookmark_extras %}
 
 <div>
-    <button hx-get="{{ obj.get_bookmarks_url }}" hx-target="#bookmark-list-{{ obj.id }}"
-            hx-trigger="click">Expand</button>
-    {{ obj.name }}
-    <div class="hidden" id="bookmark-list-{{ obj.id }}"></div>
+    {% if obj|class == "Bookmark" %}
+        {{ obj.name }}
+    {% else %}
+        <button hx-get="{{ obj.get_content_url }}" hx-target="#bookmark-list-{{ obj.id }}"
+                hx-trigger="click">Expand</button>
+        {{ obj.name }}
+        <div class="hidden" id="bookmark-list-{{ obj.id }}"></div>
+    {% endif %}
 </div>

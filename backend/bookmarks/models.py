@@ -24,20 +24,16 @@ class BookmarkFolder(models.Model):
 
     objects = FolderManager()
 
-    def get_bookmarks_url(self):
+    def get_content_url(self):
         kwargs = {
             'id': self.id,
         }
-        return reverse("bookmarks:hx-folder-bookmarks", kwargs=kwargs)
+        return reverse("bookmarks:folder-content", kwargs=kwargs)
 
     def get_update_url(self):
         return reverse("bookmarks:hx-folder-update", kwargs={'id': self.id})
     
-    # def get_create_url(self):
-    #     return reverse("bookmarks:hx-folder-create", kwargs={})
-    
     def get_status(self):
-        # i think it changes opened's value on given instance
         self.opened = not(self.opened)
         self.save()
         return not(self.opened)
