@@ -2,12 +2,6 @@ from django.db import models
 from django.urls import reverse
 
 
-# class Element(models.Model):
-#     # by default, root folder
-#     folder = models.ForeignKey(BookmarkFolder, on_delete=models.SET_NULL)     # change me
-#     name = models.CharField(max_length=50, blank=True)
-
-
 class FolderManager(models.Manager):
     # closes all folders
     def close_all(self):
@@ -64,12 +58,33 @@ class BookmarkFolder(models.Model):
 class Bookmark(models.Model):
     parent_folder = models.ForeignKey(BookmarkFolder, blank=True, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50)
-    url = models.URLField()
+    url = models.URLField(null=True)
     # favicon
     # date: created, last opened
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = self.new_bookmark_name()
+        """
+        parent_folder=None
+        url=None
+        only name specified here
+        """
+        super().save()
+
+    @classmethod
+    def new_bookmark_name(cls):
+        untitles = list(cls.objects.filter(name__icontains="Untitled").values_list("name", flat=True))
+        if "Untitled" not in untitles:
+            return "Untitled"
+        else:
+            count = 1
+            while f"Untitled {count}" in untitles:
+                count += 1
+            return f"Untitled {count}"
 
     """
     parent_folder is instance of BookmarkFolder class

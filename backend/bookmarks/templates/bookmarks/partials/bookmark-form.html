@@ -1,0 +1,7 @@
+
+
+<form hx-post="hx/bookmark-create/" hx-target="this" hx-swap="delete">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">OK</button>
+</form>

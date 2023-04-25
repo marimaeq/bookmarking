@@ -1,5 +1,6 @@
 from django import forms
-from .models import BookmarkFolder
+from .models import BookmarkFolder, Bookmark
+
 
 class FolderForm(forms.ModelForm):
     class Meta:
@@ -22,3 +23,16 @@ class FolderForm(forms.ModelForm):
             return data
         else:
             raise forms.ValidationError("This name is already in use.")
+
+
+class BookmarkForm(forms.ModelForm):
+    class Meta:
+        model = Bookmark
+        fields = ['parent_folder', 'name', 'url']
+
+    def __init__(self, *args, **kwargs):
+        print("here i am!!!")
+        super().__init__(*args, **kwargs)
+        self.fields['parent_folder'].label = ""
+        self.fields['name'].label = ""
+        self.fields['url'].widget.attrs['size'] = 10

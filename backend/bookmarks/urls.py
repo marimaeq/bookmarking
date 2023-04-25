@@ -4,6 +4,7 @@ from .views import (
     HXBookmarkFolderContent,
     HXFolderCreateView,
     HXFolderUpdateView,
+    HXBookmarkCreateView,
 )
 
 app_name = 'bookmarks'
@@ -14,6 +15,7 @@ urlpatterns = [
     path('hx/folder-content/<int:id>/', HXBookmarkFolderContent.as_view(), name="folder-content"),
     path('hx/folder-create/', HXFolderCreateView.as_view(), name="hx-folder-create"),
     path('hx/<int:id>/folder-update/', HXFolderUpdateView.as_view(), name="hx-folder-update"),
+    path('hx/bookmark-create/', HXBookmarkCreateView.as_view(), name="hx-bookmark-create"),
 ]
 
 """

@@ -2,11 +2,15 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.views import View
-from django.views.generic import ListView, FormView, UpdateView
+from django.views.generic import (
+    ListView,
+    FormView,
+    UpdateView,
+    CreateView,
+)
 from .models import Bookmark, BookmarkFolder
-from .forms import FolderForm
+from .forms import FolderForm, BookmarkForm
 from itertools import chain
-from operator import attrgetter
 
 
 # Create your views here.
@@ -20,6 +24,7 @@ class HomeView(View):
     def get_context_data(self):
         context = {}
         context['create_folder_url'] = reverse("bookmarks:hx-folder-create", kwargs={})
+        context['create_bookmark_url'] = reverse("bookmarks:hx-bookmark-create", kwargs={})
         context['main_folder_content_url'] = reverse("bookmarks:main-folder-content", kwargs={})
         return context
 
@@ -99,4 +104,30 @@ class HXFolderCreateView(View):
         context = {
             'obj': obj,
         }
-        return render(request, "bookmarks/partials/mid-create-edit.html", context=context)    
+        return render(request, "bookmarks/partials/mid-create-edit.html", context=context)
+
+
+class HXBookmarkCreateView(CreateView):
+    """
+    get: Initializes form with unique Untitled name
+    post: Creates a bookmark with submitted data
+    """  
+    form_class = BookmarkForm
+    template_name = "bookmarks/partials/bookmark-form.html"     #for get
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial.update({'name': Bookmark.new_bookmark_name()})
+        return initial
+
+    def form_valid(self, form):
+        self.object = form.save()
+        context = {
+            'object': self.object 
+        }
+        data = form.cleaned_data
+        response = render(self.request, template_name="bookmarks/partials/bookmark-element.html", context=context)
+        if data['parent_folder'] is None:
+            response['HX-Reswap'] = "outerHTML"
+            return response
+        return response

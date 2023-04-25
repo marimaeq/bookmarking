@@ -1,7 +1,13 @@
 
+{% load bookmark_extras %}
+
 {% if not opened %}
     {% for object in object_list %}
-        {% include 'bookmarks/partials/folder-element.html' with obj=object %}
+        {% if object|class == "Bookmark" %}
+            {% include "bookmarks/partials/bookmark-element.html" %}
+        {% else %}
+            {% include "bookmarks/partials/folder-element.html" with obj=object %}
+        {% endif %}
     {% endfor %}
 {% else %}
 {% endif %}

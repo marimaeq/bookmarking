@@ -10,6 +10,7 @@
     <body>
         <div id="mydiv">
             <button hx-post="{{ create_folder_url }}" hx-target="#folders" hx-trigger="click" hx-swap="beforeend">New folder</button>
+            <button hx-get="{{ create_bookmark_url }}" hx-target="#folders" hx-trigger="click" hx-swap="beforeend">New bookmark</button>
             <div id="folders" hx-get="{{ main_folder_content_url }}", hx-trigger="revealed", hx-swap="innerHMTL">
                 
             </div>
